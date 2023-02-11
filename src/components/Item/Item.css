@@ -1,0 +1,128 @@
+.Item {
+  box-shadow: 3px 3px 5px rgb(224, 224, 231);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.ItemWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 10px;
+  font-size: 14px;
+  width: 70%;
+  justify-content: space-evenly;
+}
+
+.Container {
+  display: flex;
+  width: 454px;
+  height: 281px;
+}
+
+.ant-card .ant-card-body {
+  padding: 0;
+}
+
+.Img {
+  width: 183px;
+  height: 281px;
+  object-fit: cover;
+}
+
+.Title {
+  font-size: 18px;
+  width: 80%;
+}
+
+.Rate {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border-radius: 100%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Rate3 {
+  border: 3px solid #e90000;
+}
+.Rate5 {
+  border: 3px solid #e97e00;
+}
+.Rate7 {
+  border: 3px solid #e9d100;
+}
+.Rate10 {
+  border: 3px solid #66e900;
+}
+
+.Genre,
+.Date {
+  opacity: 0.7;
+}
+
+.Text {
+  font-weight: 500;
+  line-height: 22px;
+  overflow: hidden;
+}
+
+.ant-rate {
+  font-size: 17px;
+}
+
+.WrapperGenre {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  opacity: 0.8;
+}
+
+.Genre {
+  padding: 2px 3px;
+  font-size: 12px;
+}
+
+.GenreFake {
+  padding: 2px 3px;
+  font-size: 12px;
+  opacity: 0;
+}
+
+@media (max-width: 768px) {
+  .Img {
+    position: absolute;
+    padding-top: 10px;
+    padding-left: 10px;
+    width: 66px;
+    height: 96px;
+  }
+  .Item {
+    width: 440px;
+    height: 245px;
+  }
+
+  .ant-rate {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+  }
+  .Title,
+  .Date,
+  .WrapperGenre {
+    padding-left: 70px;
+  }
+  .ItemWrapper {
+    gap: 6px;
+    width: 87%;
+    justify-content: stretch;
+  }
+  .Title {
+    font-size: 16px;
+    width: 100%;
+  }
+}
