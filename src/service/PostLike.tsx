@@ -1,6 +1,6 @@
 type OptionsType = {
   method: string;
-  headers: any;
+  headers: { 'Content-Type': string };
   body: string;
 };
 
@@ -14,7 +14,7 @@ export default class PostLike {
       headers: { 'Content-Type': 'application/json;charset=utf-8' },
       body: JSON.stringify({ value: value }),
     };
-    const res: any = await fetch(url, options);
+    const res = await fetch(url, options);
     if (!res.ok) {
       throw new Error();
     }

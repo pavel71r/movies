@@ -7,12 +7,15 @@ type StateType = {
   value: string;
 };
 
-export default class SearchPanel extends React.Component<any, StateType> {
+type PropsType = {
+  onSearch: (value: string) => void;
+};
+export default class SearchPanel extends React.Component<PropsType, StateType> {
   state = {
     value: '',
   };
 
-  onChange = (event: any) => {
+  onChange = (event: React.BaseSyntheticEvent<any>) => {
     this.setState({ value: event.target.value });
     if (event.nativeEvent.data !== ' ' && event.nativeEvent.data !== null) {
       this.props.onSearch(event.target.value);

@@ -4,6 +4,7 @@ import { Spin, Pagination, Tabs } from 'antd';
 import { debounce } from 'lodash';
 import type { TabsProps } from 'antd';
 
+import type { DataType } from '../Item/Item';
 import ItemList from '../ItemList/ItemList';
 import SearchMovie from '../../service/SearchMovie';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
@@ -13,11 +14,16 @@ import CreateSessionGuest from '../../service/CreateSessionGuest';
 import PostLike from '../../service/PostLike';
 import GetLikeListMovies from '../../service/GetLikeListMovies';
 
-const { Provider, Consumer } = React.createContext({});
+const { Provider, Consumer } = React.createContext<Array<GenreType>>([{ id: 0, name: '' }]);
 export { Consumer };
 
+type GenreType = {
+  id: number;
+  name: string;
+};
+
 export type StateType = {
-  data: Array<{}>;
+  data: Array<DataType>;
   loading: boolean;
   error: boolean;
   notFound: boolean;
@@ -26,9 +32,9 @@ export type StateType = {
   totalPage: number;
   totalLikePage: number;
   searchValue: string;
-  genre: {};
+  genre: Array<GenreType>;
   idSession: string;
-  likeData: Array<{}>;
+  likeData: Array<DataType>;
   valueTabs: string;
 };
 
@@ -44,7 +50,7 @@ export default class App extends React.Component<{}, StateType> {
     totalPage: 0,
     totalLikePage: 0,
     searchValue: '',
-    genre: {},
+    genre: [{ id: 0, name: '' }],
     idSession: '',
     likeData: [],
     valueTabs: '1',
@@ -59,7 +65,6 @@ export default class App extends React.Component<{}, StateType> {
           error: false,
           notFound: false,
           totalPage: response.total_results,
-          valuePaginationSearch: 1,
         });
         if (!response.results.length) {
           this.setState({ notFound: true });
@@ -100,6 +105,7 @@ export default class App extends React.Component<{}, StateType> {
 
   changePagePagination = (value: number) => {
     window.scrollTo(0, 0);
+
     if (this.state.valueTabs === '1') {
       this.setState({ valuePaginationSearch: value });
       this.updateMovies(this.state.searchValue, value);
@@ -164,13 +170,13 @@ export default class App extends React.Component<{}, StateType> {
           defaultPageSize={20}
           showSizeChanger={false}
           hideOnSinglePage
-          onChange={(value: any) => {
+          onChange={(value) => {
             this.changePagePagination(value);
           }}
         />
       ) : null;
 
-    let newData;
+    let newData: Array<DataType> = [];
     if (this.state.valueTabs === '1') {
       newData = this.state.data;
     }
@@ -182,7 +188,7 @@ export default class App extends React.Component<{}, StateType> {
       <React.Fragment>
         {this.state.valueTabs === '1' && (
           <SearchPanel
-            onSearch={(value: string) => {
+            onSearch={(value) => {
               this.onSearch(value);
             }}
           />

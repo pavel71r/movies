@@ -4,20 +4,47 @@ import { Card, Rate } from 'antd';
 import { format } from 'date-fns';
 import { truncate } from 'lodash';
 
-export default class Item extends React.Component<any> {
+type PropsType = {
+  genre: {
+    id: number;
+    name: string;
+  }[];
+  onLike: (id: number, value: number) => void;
+  props: DataType;
+};
+
+export type DataType = {
+  adult: boolean;
+  backdrop_path: null | string;
+  genre_ids: number[];
+  id: number;
+  original_language: string;
+  original_title: string;
+  overview: string;
+  popularity: number;
+  poster_path: null | string;
+  release_date: string;
+  title: string;
+  video: false;
+  vote_average: number;
+  vote_count: number;
+  rating?: number | undefined;
+};
+
+export default class Item extends React.Component<PropsType, {}> {
   urlImg: string = this.props.props.poster_path
     ? `https://image.tmdb.org/t/p/original${this.props.props.poster_path}`
     : 'https://img.freepik.com/premium-vector/error-404-landing-page-with-a-file-in-flat-design_249405-162.jpg?w=1380';
 
   onChangeLike = (value: number) => {
     this.props.onLike(this.props.props.id, value);
-    sessionStorage.setItem(this.props.props.id, String(value));
+    sessionStorage.setItem(String(this.props.props.id), String(value));
   };
 
   render() {
-    let rate: number = this.props.props.rating;
-    if (sessionStorage.getItem(this.props.props.id)) {
-      rate = Number(sessionStorage.getItem(this.props.props.id));
+    let rate = this.props.props.rating;
+    if (sessionStorage.getItem(String(this.props.props.id))) {
+      rate = Number(sessionStorage.getItem(String(this.props.props.id)));
     }
 
     let colorRate = 'Rate';
@@ -38,9 +65,9 @@ export default class Item extends React.Component<any> {
       colorRate = 'Rate Rate10';
     }
 
-    const genre: Array<any> = [];
-    this.props.props.genre_ids.forEach((item: any) => {
-      this.props.genre.forEach((el: any) => {
+    const genre = [];
+    this.props.props.genre_ids.forEach((item) => {
+      this.props.genre.forEach((el) => {
         if (item === el.id) {
           genre.push(
             <button key={el.id} className="Genre">

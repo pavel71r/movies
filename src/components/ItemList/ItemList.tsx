@@ -3,10 +3,16 @@ import './ItemList.css';
 
 import Item from '../Item/Item';
 import { Consumer } from '../App/App';
+import type { DataType } from '../Item/Item';
 
-export default class ItemList extends React.Component<any> {
+type PropsType = {
+  onLike: (id: number, rate: number) => void;
+  props: DataType[];
+};
+
+export default class ItemList extends React.Component<PropsType> {
   render() {
-    const elements = this.props.props.map((item: any) => {
+    const elements = this.props.props.map((item) => {
       return (
         <li key={item.id}>
           <Consumer>
@@ -14,7 +20,7 @@ export default class ItemList extends React.Component<any> {
               return (
                 <Item
                   props={item}
-                  onLike={(id: string, rate: number) => {
+                  onLike={(id, rate) => {
                     this.props.onLike(id, rate);
                   }}
                   genre={genre}

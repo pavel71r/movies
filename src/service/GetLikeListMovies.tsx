@@ -3,7 +3,7 @@ export default class GetLikeListMovies {
     const url = `https://api.themoviedb.org/3/guest_session/${userId}/rated/movies?api_key=1735ed745ae5157a35bd815466359e75&page=${page}
       `;
 
-    const res: any = await fetch(url);
+    const res = await fetch(url);
     if (!res.ok) {
       throw new Error();
     }
