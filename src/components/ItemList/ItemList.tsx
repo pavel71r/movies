@@ -10,28 +10,28 @@ type PropsType = {
   props: DataType[];
 };
 
-export default class ItemList extends React.Component<PropsType> {
-  render() {
-    const elements = this.props.props.map((item) => {
-      return (
-        <li key={item.id}>
-          <Consumer>
-            {(genre) => {
-              return (
-                <Item
-                  props={item}
-                  onLike={(id, rate) => {
-                    this.props.onLike(id, rate);
-                  }}
-                  genre={genre}
-                ></Item>
-              );
-            }}
-          </Consumer>
-        </li>
-      );
-    });
+const ItemList = ({ props, onLike }: PropsType) => {
+  const elements = props.map((item) => {
+    return (
+      <li key={item.id}>
+        <Consumer>
+          {(genre) => {
+            return (
+              <Item
+                props={item}
+                onLike={(id, rate) => {
+                  onLike(id, rate);
+                }}
+                genre={genre}
+              ></Item>
+            );
+          }}
+        </Consumer>
+      </li>
+    );
+  });
 
-    return <ul className="ItemList">{elements}</ul>;
-  }
-}
+  return <ul className="ItemList">{elements}</ul>;
+};
+
+export default ItemList;
