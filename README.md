@@ -1,1 +1,1 @@
-https://vercel.com/pavel71r/movies
+https://movies-pavel71r.vercel.app/
