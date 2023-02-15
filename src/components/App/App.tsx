@@ -1,48 +1,15 @@
 import React from 'react';
 import './App.css';
-import { Spin, Pagination, Tabs } from 'antd';
 import { debounce } from 'lodash';
-import type { TabsProps } from 'antd';
 
-import type { DataType } from '../Item/Item';
-import ItemList from '../ItemList/ItemList';
-import SearchMovie from '../../service/SearchMovie';
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import SearchPanel from '../SearchPanel/SearchPanel';
-import GetGenre from '../../service/GetGenre';
-import CreateSessionGuest from '../../service/CreateSessionGuest';
-import PostLike from '../../service/PostLike';
-import GetLikeListMovies from '../../service/GetLikeListMovies';
-
-const { Provider, Consumer } = React.createContext<Array<GenreType>>([{ id: 0, name: '' }]);
-export { Consumer };
-
-type GenreType = {
-  id: number;
-  name: string;
-};
-
-export type StateType = {
-  data: Array<DataType>;
-  loading: boolean;
-  error: boolean;
-  notFound: boolean;
-  valuePaginationSearch: number;
-  valuePaginationRated: number;
-  totalPage: number;
-  totalLikePage: number;
-  searchValue: string;
-  genre: Array<GenreType>;
-  idSession: string;
-  likeData: Array<DataType>;
-  valueTabs: string;
-};
-
+import { Provider } from '../../context/Context';
+import MovieService from '../../service/MovieService';
+import Tab from '../Tab/Tab';
+import type { StateType } from '../../Types';
 export default class App extends React.Component<{}, StateType> {
-  SearchMovie = new SearchMovie();
   state = {
     data: [],
-    loading: false,
+    loading: true,
     error: false,
     notFound: false,
     valuePaginationSearch: 1,
@@ -56,8 +23,10 @@ export default class App extends React.Component<{}, StateType> {
     valueTabs: '1',
   };
 
+  MovieService = new MovieService();
+
   updateMovies(value: string, page: number) {
-    this.SearchMovie.getPeople(value, page)
+    this.MovieService.getSearchList(value, page)
       .then((response) => {
         this.setState({
           data: response.results,
@@ -71,14 +40,9 @@ export default class App extends React.Component<{}, StateType> {
         }
       })
       .catch(() => {
-        this.errorMessage();
-        this.setState({ loading: false });
+        this.setState({ loading: false, error: true });
       });
   }
-
-  errorMessage = () => {
-    this.setState({ error: true });
-  };
 
   onSearch = (value: string) => {
     if (value) {
@@ -104,9 +68,7 @@ export default class App extends React.Component<{}, StateType> {
   }, 1000);
 
   changePagePagination = (value: number) => {
-    window.scrollTo(0, 0);
-
-    if (this.state.valueTabs === '1') {
+    if (this.state.valueTabs === '1' && this.state.searchValue) {
       this.setState({ valuePaginationSearch: value });
       this.updateMovies(this.state.searchValue, value);
     }
@@ -114,31 +76,44 @@ export default class App extends React.Component<{}, StateType> {
       this.setState({ valuePaginationRated: value });
       this.getLikeList(value);
     }
+    window.scrollTo(0, 0);
+    if (!this.state.searchValue) {
+      this.setState({ valuePaginationSearch: value });
+      this.updatePopularList(value);
+    }
   };
 
-  GetGenre = new GetGenre();
+  updatePopularList = (value: number) => {
+    this.MovieService.getPopularList(value).then((response) => {
+      this.setState({
+        data: response.results,
+        loading: false,
+        totalPage: response.total_results,
+      });
+    });
+  };
 
   componentDidMount() {
-    this.GetGenre.getGenreList().then((response) => {
+    this.updatePopularList(this.state.valuePaginationSearch);
+    this.MovieService.getGenreList().then((response) => {
       this.setState({ genre: response.genres });
     });
-    this.CreateSessionGuest.getIdSession().then((response) => {
-      this.setState({ idSession: response.guest_session_id });
-    });
+    if (sessionStorage.getItem('idSession')) {
+      this.setState({ idSession: sessionStorage.getItem('idSession') });
+    } else {
+      this.MovieService.getIdSession().then((response) => {
+        this.setState({ idSession: response.guest_session_id });
+        sessionStorage.setItem('idSession', response.guest_session_id);
+      });
+    }
   }
 
-  CreateSessionGuest = new CreateSessionGuest();
-
-  PostLike = new PostLike();
-
   onLike = (id: number, rate: number) => {
-    this.PostLike.postLikeMovie(id, rate, this.state.idSession);
+    this.MovieService.postLikeMovie(id, rate, this.state.idSession);
   };
 
-  GetLikeListMovies = new GetLikeListMovies();
-
-  getLikeList = (page?: number | undefined) => {
-    this.GetLikeListMovies.getLikeMovies(this.state.idSession, page).then((response) => {
+  getLikeList = (page: number) => {
+    this.MovieService.getLikeMovies(this.state.idSession, page).then((response) => {
       this.setState({
         likeData: response.results,
         loading: false,
@@ -148,87 +123,23 @@ export default class App extends React.Component<{}, StateType> {
   };
 
   changePageTabs = (value: string) => {
-    this.setState({ valueTabs: value, loading: true });
-    this.getLikeList();
+    this.setState({ valueTabs: value });
+    if (value === '2') {
+      this.setState({ loading: true });
+      this.getLikeList(1);
+    }
   };
 
   render() {
-    const spinner = this.state.loading ? <Spin /> : null;
-
-    const errorMessage = this.state.error || this.state.notFound ? <ErrorMessage props={this.state} /> : null;
-
-    const totalPage = this.state.valueTabs === '1' ? this.state.totalPage : this.state.totalLikePage;
-
-    const defaultPage: number =
-      this.state.valueTabs === '1' ? this.state.valuePaginationSearch : this.state.valuePaginationRated;
-
-    const pagination =
-      this.state.totalPage && !this.state.loading && !this.state.error ? (
-        <Pagination
-          defaultCurrent={defaultPage}
-          total={totalPage}
-          defaultPageSize={20}
-          showSizeChanger={false}
-          hideOnSinglePage
-          onChange={(value) => {
-            this.changePagePagination(value);
-          }}
-        />
-      ) : null;
-
-    let newData: Array<DataType> = [];
-    if (this.state.valueTabs === '1') {
-      newData = this.state.data;
-    }
-    if (this.state.valueTabs === '2') {
-      newData = this.state.likeData;
-    }
-
-    const App = (
-      <React.Fragment>
-        {this.state.valueTabs === '1' && (
-          <SearchPanel
-            onSearch={(value) => {
-              this.onSearch(value);
-            }}
-          />
-        )}
-        {spinner}
-        {errorMessage}
-        <ItemList
-          props={newData}
-          onLike={(id: number, rate: number) => {
-            this.onLike(id, rate);
-          }}
-        />
-        {pagination}
-      </React.Fragment>
-    );
-
-    const items: TabsProps['items'] = [
-      {
-        key: '1',
-        label: 'Search',
-        children: App,
-      },
-      {
-        key: '2',
-        label: 'Rated',
-        children: App,
-      },
-    ];
-
     return (
       <div className="App">
         <Provider value={this.state.genre}>
-          <Tabs
-            destroyInactiveTabPane
-            defaultActiveKey="1"
-            items={items}
-            centered
-            onChange={(value) => {
-              this.changePageTabs(value);
-            }}
+          <Tab
+            props={this.state}
+            onChangeTabs={this.changePageTabs}
+            onChangePage={this.changePagePagination}
+            onSearch={this.onSearch}
+            onLike={this.onLike}
           />
         </Provider>
       </div>

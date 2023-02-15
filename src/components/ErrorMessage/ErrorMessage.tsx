@@ -1,11 +1,9 @@
 import { Alert, Space } from 'antd';
 
 import './ErrorMessage.css';
-import type { StateType } from '../App/App';
+import type { StateType } from '../../Types';
 
-type ErrorMessageType = { props: StateType };
-
-const ErrorMessage = ({ props }: ErrorMessageType) => {
+const ErrorMessage = ({ props }: { props: StateType }) => {
   let description;
   let typeError: 'error' | 'info' | 'success' | 'warning' | undefined;
   let message;

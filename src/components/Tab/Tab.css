@@ -1,0 +1,3 @@
+.ant-tabs-nav::before {
+    content: none !important;
+  }

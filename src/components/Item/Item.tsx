@@ -4,34 +4,9 @@ import { Card, Rate } from 'antd';
 import { format } from 'date-fns';
 import { truncate } from 'lodash';
 
-type PropsType = {
-  genre: {
-    id: number;
-    name: string;
-  }[];
-  onLike: (id: number, value: number) => void;
-  props: DataType;
-};
+import type { ItemPropsType } from '../../Types';
 
-export type DataType = {
-  adult: boolean;
-  backdrop_path: null | string;
-  genre_ids: number[];
-  id: number;
-  original_language: string;
-  original_title: string;
-  overview: string;
-  popularity: number;
-  poster_path: null | string;
-  release_date: string;
-  title: string;
-  video: false;
-  vote_average: number;
-  vote_count: number;
-  rating?: number | undefined;
-};
-
-const Item = ({ props, genre, onLike }: PropsType) => {
+const Item = ({ props, genre, onLike }: ItemPropsType) => {
   const urlImg: string = props.poster_path
     ? `https://image.tmdb.org/t/p/original${props.poster_path}`
     : 'https://img.freepik.com/premium-vector/error-404-landing-page-with-a-file-in-flat-design_249405-162.jpg?w=1380';
@@ -100,14 +75,7 @@ const Item = ({ props, genre, onLike }: PropsType) => {
               separator: ' ',
             })}
           </p>
-          <Rate
-            allowHalf
-            defaultValue={rate}
-            count={10}
-            onChange={(value) => {
-              onChangeLike(value);
-            }}
-          />
+          <Rate allowHalf defaultValue={rate} count={10} onChange={onChangeLike} />
         </div>
       </div>
     </Card>

@@ -2,15 +2,9 @@ import React from 'react';
 import { Input } from 'antd';
 
 import './SearchPanel.css';
+import type { SearchPanelPropsType, SearchPanelStateType } from '../../Types';
 
-type StateType = {
-  value: string;
-};
-
-type PropsType = {
-  onSearch: (value: string) => void;
-};
-export default class SearchPanel extends React.Component<PropsType, StateType> {
+export default class SearchPanel extends React.Component<SearchPanelPropsType, SearchPanelStateType> {
   state = {
     value: '',
   };
@@ -29,20 +23,8 @@ export default class SearchPanel extends React.Component<PropsType, StateType> {
 
   render() {
     return (
-      <form
-        className="SearchPanel"
-        onSubmit={(event) => {
-          this.onSubmit(event);
-        }}
-      >
-        <Input
-          autoFocus={false}
-          placeholder="Type to search..."
-          value={this.state.value}
-          onChange={(event) => {
-            this.onChange(event);
-          }}
-        />
+      <form className="SearchPanel" onSubmit={this.onSubmit}>
+        <Input autoFocus={false} placeholder="Type to search..." value={this.state.value} onChange={this.onChange} />
       </form>
     );
   }

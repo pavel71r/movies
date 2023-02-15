@@ -2,29 +2,16 @@ import React from 'react';
 import './ItemList.css';
 
 import Item from '../Item/Item';
-import { Consumer } from '../App/App';
-import type { DataType } from '../Item/Item';
+import { Consumer } from '../../context/Context';
+import type { ItemListPropsType } from '../../Types';
 
-type PropsType = {
-  onLike: (id: number, rate: number) => void;
-  props: DataType[];
-};
-
-const ItemList = ({ props, onLike }: PropsType) => {
+const ItemList = ({ props, onLike }: ItemListPropsType) => {
   const elements = props.map((item) => {
     return (
       <li key={item.id}>
         <Consumer>
           {(genre) => {
-            return (
-              <Item
-                props={item}
-                onLike={(id, rate) => {
-                  onLike(id, rate);
-                }}
-                genre={genre}
-              ></Item>
-            );
+            return <Item props={item} onLike={onLike} genre={genre} />;
           }}
         </Consumer>
       </li>
