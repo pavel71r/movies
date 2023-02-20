@@ -25,6 +25,7 @@ const Tab = ({ props, onChangeTabs, onChangePage, onSearch, onLike }: TabType) =
   if (props.valueTabs === '2') {
     newData = props.likeData;
   }
+
   const App = (
     <React.Fragment>
       {props.valueTabs === '1' && <SearchPanel onSearch={onSearch} />}
